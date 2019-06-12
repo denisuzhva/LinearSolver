@@ -219,7 +219,7 @@ Matrix& Matrix::operator*=(const Matrix &mat_right)
 // Delete a row (starting with 0)
 Matrix Matrix::deleteRow(uint row_del) const
 {
-	if (row_del > rows)
+	if (row_del >= rows)
 	{
 		std::cout << "[ERROR]: row number is higher than the maximum" << std::endl;
 		return *this;
@@ -241,7 +241,7 @@ Matrix Matrix::deleteRow(uint row_del) const
 // Delete a column (starting with 0)
 Matrix Matrix::deleteCol(uint col_del) const
 {
-	if (col_del > cols)
+	if (col_del >= cols)
 	{
 		std::cout << "[ERROR]: column number is higher than the maximum" << std::endl;
 		return *this;
