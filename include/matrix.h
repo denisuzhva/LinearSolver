@@ -18,10 +18,11 @@ class Matrix
 	
 		Matrix(uint, uint, float**);
 		Matrix(uint, uint, const float&);
+		Matrix(const Matrix&);
 		virtual ~Matrix();
 		uint getNumOfRows() const;
 		uint getNumOfCols() const;
-		void printMatrix();
+		void printMatrix() const;
 
 		float& operator()(const uint&, const uint&);
 		const float& operator()(const uint&, const uint&) const; 

@@ -29,6 +29,18 @@ Matrix::Matrix(uint in_rows, uint in_cols, const float& val) :
 }
 
 
+// Conversion
+Matrix::Matrix(const Matrix& mat_right) :
+	rows(mat_right.rows),
+	cols(mat_right.cols)
+{
+	allocMem();
+	for (uint i = 0; i < rows; i++)
+		for (uint j = 0; j < cols; j++)
+			matrix[i][j] = mat_right(i, j);
+}
+
+
 // Destructor with delete
 Matrix::~Matrix() 
 {
@@ -52,13 +64,13 @@ uint Matrix::getNumOfCols() const
 
 
 // Print the matrix
-void Matrix::printMatrix()
+void Matrix::printMatrix() const
 {
 	for (uint i = 0; i < rows; i++)
 	{
 		for (uint j = 0; j < cols; j++)
 		{
-			std::cout << matrix[i][j] << "\t";
+			std::cout << this->matrix[i][j] << "\t";
 		}
 		std::cout << "\n";
 	}
@@ -233,6 +245,7 @@ Matrix Matrix::deleteRow(uint row_del) const
 		for (uint i = row_del; i < rows-1; i++)
 			for (uint j = 0; j < cols; j++)
 				result.matrix[i][j] = this->matrix[i+1][j];
+		result.printMatrix();
 		return result;
 	}
 }
