@@ -245,7 +245,6 @@ Matrix Matrix::deleteRow(uint row_del) const
 		for (uint i = row_del; i < rows-1; i++)
 			for (uint j = 0; j < cols; j++)
 				result.matrix[i][j] = this->matrix[i+1][j];
-		result.printMatrix();
 		return result;
 	}
 }
@@ -286,7 +285,7 @@ float Matrix::determinant() const
 		float det = 0.0f;	
 		if (rows == 2)
 		{
-			det = matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
+			det = this->matrix[0][0] * this->matrix[1][1] - this->matrix[0][1] * this->matrix[1][0];
 			return det; 
 		}
 		else
@@ -296,7 +295,7 @@ float Matrix::determinant() const
 				float multiplier = (*this)(0, i);
 				Matrix minor = this->deleteRow(0);
 				minor = minor.deleteCol(i);
-				det += (float)cuspower<int>(-1, i) * multiplier * minor.determinant();
+				det += cuspower(-1.0f, i) * multiplier * minor.determinant();
 			}
 			return det;
 		}

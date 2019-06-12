@@ -31,8 +31,7 @@ int main()
 	arr_2d[2][2] = 2.0f;
 	Matrix mat1(rows, cols, arr_2d);
 	mat1.printMatrix();
-	Matrix mat2 = mat1.deleteRow(1);
-	mat2.printMatrix();
+	std::cout << mat1.determinant() << std::endl;
 	
 	for(uint i = 0; i < rows; i++)
 		delete[] arr_2d[i];

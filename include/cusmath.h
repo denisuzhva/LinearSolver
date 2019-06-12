@@ -1,29 +1,23 @@
-template <class T1>
-T1 cuspower(T1 base, int exp);
-
 // Multipurpose power function
-template <class T1>
-T1 cuspower(T1 base, int exp)
+template <class T>
+T cuspower(T base, int exp)
 {
-    if (exp > 0)
-    {
-        for (unsigned i = 0; i <= exp; i++)
-        {
-            base *= base;
-        }
-        return base;
-    }
-    else if (exp = 0)
-    {
-        base /= base;
-        return base;
-    }
-    else 
-    {
-        for (unsigned i = 0; i >= exp; i--)
-        {
-            base /= base;
-        }
-        return base;
-    }
+	T result = base;
+	if (exp > 0)
+	{
+		for (unsigned i = 0; i < exp-1; i++)
+        	{
+			//std::cout << "Result: " << result << std::endl;
+        		result *= base;
+        	}
+	        return result;
+    	}
+	else 
+	{
+		for (unsigned i = 0; i < -exp+1; i++)
+		{
+			result /= base;
+		}
+		return result;
+	}
 }
