@@ -217,7 +217,7 @@ Matrix& Matrix::operator*=(const Matrix &mat_right)
 
 
 // Delete a row (starting with 0)
-Matrix Matrix::deleteRow(uint row_del)
+Matrix Matrix::deleteRow(uint row_del) const
 {
 	if (row_del > rows)
 	{
@@ -239,7 +239,7 @@ Matrix Matrix::deleteRow(uint row_del)
 
 
 // Delete a column (starting with 0)
-Matrix Matrix::deleteCol(uint col_del)
+Matrix Matrix::deleteCol(uint col_del) const
 {
 	if (col_del > cols)
 	{
@@ -271,7 +271,19 @@ float Matrix::determinant() const
 	else
 	{
 		float det = 0.0f;	
-		
+		if (rows == 2)
+		{
+			det = matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
+		}
+		else
+		{
+			for (uint i = 0; i < cols; i++)
+			{
+				Matrix minor = this->deleteRow(0);
+				minor = minor.deleteCol(i);
+				det += (float)cuspower<int>(-1, i) * minor.determinant();
+			}
+		}
 	}
 }
 

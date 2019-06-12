@@ -4,28 +4,27 @@
 
 // Multipurpose power function
 template <class T1>
-T1 power(T1 &base, int exp)
+T1 cuspower(T1 base, int exp)
 {
-    T1 result = base;
     if (exp > 0)
     {
         for (unsigned i = 0; i <= exp; i++)
         {
-            result *= result;
+            base *= base;
         }
-        return result;
+        return base;
     }
     else if (exp = 0)
     {
-        result /= result;
-        return result;
+        result /= base;
+        return base;
     }
     else 
     {
         for (unsigned i = 0; i >= exp; i--)
         {
-            result /= result;
+            base /= base;
         }
-        return result;
+        return base;
     }
 }

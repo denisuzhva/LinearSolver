@@ -34,8 +34,8 @@ class Matrix
 		Matrix operator*(const Matrix&);
 		Matrix& operator*=(const Matrix&);
 
-		Matrix deleteRow(uint);
-		Matrix deleteCol(uint);
+		Matrix deleteRow(uint) const;
+		Matrix deleteCol(uint) const;
 		float determinant() const;
 
 		void allocMem();
