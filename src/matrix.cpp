@@ -274,15 +274,18 @@ float Matrix::determinant() const
 		if (rows == 2)
 		{
 			det = matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
+			return det; 
 		}
 		else
 		{
 			for (uint i = 0; i < cols; i++)
 			{
+				float multiplier = (*this)(0, i);
 				Matrix minor = this->deleteRow(0);
 				minor = minor.deleteCol(i);
-				det += (float)cuspower<int>(-1, i) * minor.determinant();
+				det += (float)cuspower<int>(-1, i) * multiplier * minor.determinant();
 			}
+			return det;
 		}
 	}
 }
