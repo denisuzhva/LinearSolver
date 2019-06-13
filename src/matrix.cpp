@@ -99,7 +99,7 @@ const float& Matrix::operator()(const unsigned& row, const unsigned& col) const
 
 /// Operations
 // Matrix assignment
-Matrix& Matrix::operator=(const Matrix &mat_right)
+Matrix& Matrix::operator=(const Matrix& mat_right)
 {
 	if (&mat_right == this)
     	return *this;
@@ -118,7 +118,7 @@ Matrix& Matrix::operator=(const Matrix &mat_right)
 
 
 // Add two matrices
-Matrix Matrix::operator+(const Matrix &mat_right)
+Matrix Matrix::operator+(const Matrix& mat_right)
 {
 	if (rows != mat_right.getNumOfRows() || cols != mat_right.getNumOfCols())
 	{
@@ -137,7 +137,7 @@ Matrix Matrix::operator+(const Matrix &mat_right)
 
 
 // Add to a matrix
-Matrix& Matrix::operator+=(const Matrix &mat_right)
+Matrix& Matrix::operator+=(const Matrix& mat_right)
 {
 	if (rows != mat_right.getNumOfRows() || cols != mat_right.getNumOfCols())
 	{
@@ -155,7 +155,7 @@ Matrix& Matrix::operator+=(const Matrix &mat_right)
 
 
 // Subtract two matrices
-Matrix Matrix::operator-(const Matrix &mat_right)
+Matrix Matrix::operator-(const Matrix& mat_right)
 {
 	if (rows != mat_right.getNumOfRows() || cols != mat_right.getNumOfCols())
 	{
@@ -174,7 +174,7 @@ Matrix Matrix::operator-(const Matrix &mat_right)
 
 
 // Subtract from a matrix
-Matrix& Matrix::operator-=(const Matrix &mat_right)
+Matrix& Matrix::operator-=(const Matrix& mat_right)
 {
 	if (rows != mat_right.getNumOfRows() || cols != mat_right.getNumOfCols())
 	{
@@ -192,7 +192,7 @@ Matrix& Matrix::operator-=(const Matrix &mat_right)
 
 
 // Multiply two matrices
-Matrix Matrix::operator*(const Matrix &mat_right)
+Matrix Matrix::operator*(const Matrix& mat_right)
 {
 	if (cols != mat_right.getNumOfRows())
 	{
@@ -214,7 +214,7 @@ Matrix Matrix::operator*(const Matrix &mat_right)
 
 
 // Multiply self by another matrix
-Matrix& Matrix::operator*=(const Matrix &mat_right)
+Matrix& Matrix::operator*=(const Matrix& mat_right)
 {
 	if (rows != mat_right.getNumOfRows() || cols != mat_right.getNumOfCols())
 	{
