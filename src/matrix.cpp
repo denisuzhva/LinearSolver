@@ -64,14 +64,14 @@ Matrix::~Matrix()
 // Get the number of rows
 unsigned Matrix::getNumOfRows() const
 {
-	return this->rows;
+	return rows;
 }
 
 
 // Get the number of columns
 unsigned Matrix::getNumOfCols() const
 {
-	return this->cols;
+	return cols;
 }
 
 
@@ -82,7 +82,7 @@ void Matrix::printMatrix() const
 	{
 		for (unsigned j = 0; j < cols; j++)
 		{
-			std::cout << this->matrix[i][j] << "\t";
+			std::cout << matrix[i][j] << "\t";
 		}
 		std::cout << "\n";
 	}
@@ -93,7 +93,7 @@ void Matrix::printMatrix() const
 // Access an element by its indices (const)
 const float& Matrix::operator()(const unsigned& row, const unsigned& col) const
 {
-	return this->matrix[row][col];
+	return matrix[row][col];
 }
 
 
@@ -122,7 +122,7 @@ Matrix Matrix::operator+(const Matrix &mat_right)
 {
 	if (rows != mat_right.getNumOfRows() || cols != mat_right.getNumOfCols())
 	{
-		std::cout << "[ERROR]: the dimensions of A and B must match when C = A + B" << std::endl;
+		std::cout << "[ERROR]: the dimensions of A and B must match when C := A + B" << std::endl;
 		return *this;
 	}
 	else
@@ -141,7 +141,7 @@ Matrix& Matrix::operator+=(const Matrix &mat_right)
 {
 	if (rows != mat_right.getNumOfRows() || cols != mat_right.getNumOfCols())
 	{
-		std::cout << "[ERROR]: the dimensions of A and B must match when A -> A + B" << std::endl;
+		std::cout << "[ERROR]: the dimensions of A and B must match when A := A + B" << std::endl;
 		return *this;
 	}
 	else
@@ -159,7 +159,7 @@ Matrix Matrix::operator-(const Matrix &mat_right)
 {
 	if (rows != mat_right.getNumOfRows() || cols != mat_right.getNumOfCols())
 	{
-		std::cout << "[ERROR]: the dimensions of A and B must match when C = A - B" << std::endl;
+		std::cout << "[ERROR]: the dimensions of A and B must match when C := A - B" << std::endl;
 		return *this;
 	}
 	else
@@ -178,7 +178,7 @@ Matrix& Matrix::operator-=(const Matrix &mat_right)
 {
 	if (rows != mat_right.getNumOfRows() || cols != mat_right.getNumOfCols())
 	{
-		std::cout << "[ERROR]: the dimensions of A and B must match when A -> A - B" << std::endl;
+		std::cout << "[ERROR]: the dimensions of A and B must match when A := A - B" << std::endl;
 		return *this;
 	}
 	else
@@ -196,7 +196,7 @@ Matrix Matrix::operator*(const Matrix &mat_right)
 {
 	if (cols != mat_right.getNumOfRows())
 	{
-		std::cout << "[ERROR]: the number of columns of A must match the number of rows of B when C = A * B" << std::endl;
+		std::cout << "[ERROR]: the number of columns of A must match the number of rows of B when C := A * B" << std::endl;
 		return *this;
 	} 
 	else
@@ -218,7 +218,7 @@ Matrix& Matrix::operator*=(const Matrix &mat_right)
 {
 	if (rows != mat_right.getNumOfRows() || cols != mat_right.getNumOfCols())
 	{
-		std::cout << "[ERROR]: the dimensions of A and B must match when A -> A * B" << std::endl;
+		std::cout << "[ERROR]: the dimensions of A and B must match when A := A * B" << std::endl;
 		return *this;
 	}
 	else
@@ -230,6 +230,17 @@ Matrix& Matrix::operator*=(const Matrix &mat_right)
 					result.matrix[i][j] += this->matrix[i][k] * mat_right(k, j);
 		return (*this = result);
 	}
+}
+
+
+// Transpose matrix
+Matrix Matrix::transpose()
+{
+	Matrix result(rows, cols);
+	for (unsigned i = 0; i < rows; i++)
+		for (unsigned j = 0; j < cols; j++)
+			result.matrix[i][j] = this->matrix[j][i];
+	return result;
 }
 
 
@@ -250,6 +261,48 @@ Matrix Matrix::getCol(unsigned col_get) const
 	for (unsigned i = 0; i < cols; i++)
 		mat_col.matrix[i][0] = this->matrix[i][col_get];
 	return mat_col;
+}
+
+
+// Set a row as the input row
+void Matrix::setRow(unsigned row_set, const Matrix& in_row)
+{
+	if (in_row.rows != 1)
+	{
+		std::cout << "[ERROR]: not a row" << std::endl;
+	}
+	else if (in_row.cols != cols)
+	{
+		std::cout << "[ERROR]: the number of columns must match" << std::endl;
+	}
+	else
+	{
+		for (unsigned j = 0; j < cols; j++)
+		{
+			this->matrix[row_set][j] = in_row.matrix[0][j];
+		}
+	}
+}
+
+
+// Set a column as the input column
+void Matrix::setCol(unsigned col_set, const Matrix& in_col)
+{
+	if (in_col.cols != 1)
+	{
+		std::cout << "[ERROR]: not a column" << std::endl;
+	}
+	else if (in_col.cols != cols)
+	{
+		std::cout << "[ERROR]: the number of rows must match" << std::endl;
+	}
+	else
+	{
+		for (unsigned i = 0; i < rows; i++)
+		{
+			this->matrix[i][col_set] = in_col.matrix[i][0];
+		}
+	}
 }
 
 
@@ -294,6 +347,28 @@ Matrix Matrix::deleteCol(unsigned col_del) const
 				result.matrix[i][j] = this->matrix[i][j+1];
 		return result;
 	}
+}
+
+
+// Swap two rows
+void Matrix::swapRows(unsigned row_1, unsigned row_2)
+{
+	Matrix temp = this->getRow(row_1);
+	for (unsigned j = 0; j < cols; j++)
+		matrix[row_1][j] = matrix[row_2][j];
+	for (unsigned j = 0; j < cols; j++)
+		matrix[row_2][j] = temp.matrix[0][j]; 
+}
+
+
+// Swap two rows
+void Matrix::swapCols(unsigned col_1, unsigned col_2)
+{
+	Matrix temp = this->getCol(col_1);
+	for (unsigned i = 0; i < cols; i++)
+		matrix[i][col_1] = matrix[i][col_2];
+	for (unsigned i = 0; i < cols; i++)
+		matrix[i][col_2] = temp.matrix[i][0]; 
 }
 
 

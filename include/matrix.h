@@ -7,22 +7,22 @@ class Matrix
 {	
 	private:		
 
-		uint rows, cols;
+		unsigned rows, cols;
 		float **matrix;
 	
 	public:
 	
-		Matrix(uint, uint, float**);
-		Matrix(uint, uint, const float&);
-		Matrix(uint, uint);
+		Matrix(unsigned, unsigned, float**);
+		Matrix(unsigned, unsigned, const float&);
+		Matrix(unsigned, unsigned);
 		Matrix(const Matrix&);
 		virtual ~Matrix();
-		uint getNumOfRows() const;
-		uint getNumOfCols() const;
+		unsigned getNumOfRows() const;
+		unsigned getNumOfCols() const;
 		void printMatrix() const;
 
-		//float& operator()(const uint&, const uint&);
-		const float& operator()(const uint&, const uint&) const; 
+		//float& operator()(const unsigned&, const unsigned&);
+		const float& operator()(const unsigned&, const unsigned&) const; 
 
 		Matrix& operator=(const Matrix&);
 		Matrix operator+(const Matrix&);
@@ -32,10 +32,16 @@ class Matrix
 		Matrix operator*(const Matrix&);
 		Matrix& operator*=(const Matrix&);
 
-		Matrix getRow(uint) const;
-		Matrix getCol(uint) const;
-		Matrix deleteRow(uint) const;
-		Matrix deleteCol(uint) const;
+		Matrix transpose();
+
+		Matrix getRow(unsigned) const;
+		Matrix getCol(unsigned) const;
+		void setRow(unsigned, const Matrix&);
+		void setCol(unsigned, const Matrix&);
+		Matrix deleteRow(unsigned) const;
+		Matrix deleteCol(unsigned) const;
+		void swapRows(unsigned, unsigned);
+		void swapCols(unsigned, unsigned);
 		float determinant() const;
 
 		void allocMem();

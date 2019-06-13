@@ -11,8 +11,8 @@ int main()
 	clock_t tStart = clock();
 	clock_t tLog;
 
-	uint rows = 3;
-	uint cols = 3;
+	unsigned rows = 3;
+	unsigned cols = 3;
 
 	float** arr_2d = new float*[rows];
 	for(unsigned short i = 0; i < rows; i++)
@@ -33,7 +33,7 @@ int main()
 	mat1.printMatrix();
 	std::cout << mat1.determinant() << std::endl;
 	
-	for(uint i = 0; i < rows; i++)
+	for(unsigned i = 0; i < rows; i++)
 		delete[] arr_2d[i];
 	delete[] arr_2d;
 	std::cout << "\nDone! Execution time: " << (float)(clock() - tStart)/CLOCKS_PER_SEC << " sec." <<  std::endl;
