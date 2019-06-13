@@ -15,7 +15,7 @@ int main()
 	uint cols = 3;
 
 	float** arr_2d = new float*[rows];
-	for(usint i = 0; i < rows; i++)
+	for(unsigned short i = 0; i < rows; i++)
 	{
 		arr_2d[i] = new float[cols];
 	}

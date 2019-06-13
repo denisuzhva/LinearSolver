@@ -6,26 +6,38 @@
 
 /// Construct and Destruct
 // Constructor
-Matrix::Matrix(uint in_rows, uint in_cols, float **in_matrix) : 
+Matrix::Matrix(unsigned in_rows, unsigned in_cols, float **in_matrix) : 
 	rows(in_rows), 
 	cols(in_cols)
 {
 	allocMem();
-	for (uint i = 0; i < rows; i++)
-		for (uint j = 0; j < cols; j++)
+	for (unsigned i = 0; i < rows; i++)
+		for (unsigned j = 0; j < cols; j++)
 			matrix[i][j] = in_matrix[i][j];
 }
 
 
 // Copy
-Matrix::Matrix(uint in_rows, uint in_cols, const float& val) : 
+Matrix::Matrix(unsigned in_rows, unsigned in_cols, const float& val) : 
 	rows(in_rows), 
 	cols(in_cols)
 {
 	allocMem();
-	for (uint i = 0; i < rows; i++)
-		for (uint j = 0; j < cols; j++)
+	for (unsigned i = 0; i < rows; i++)
+		for (unsigned j = 0; j < cols; j++)
 			matrix[i][j] = val;
+}
+
+
+// Copy 2
+Matrix::Matrix(unsigned in_rows, unsigned in_cols) :
+	rows(in_rows),
+	cols(in_cols)
+{
+	allocMem();
+	for (unsigned i = 0; i < rows; i++)
+		for (unsigned j = 0; j < cols; j++)
+			matrix[i][j] = 0.0f;
 }
 
 
@@ -35,8 +47,8 @@ Matrix::Matrix(const Matrix& mat_right) :
 	cols(mat_right.cols)
 {
 	allocMem();
-	for (uint i = 0; i < rows; i++)
-		for (uint j = 0; j < cols; j++)
+	for (unsigned i = 0; i < rows; i++)
+		for (unsigned j = 0; j < cols; j++)
 			matrix[i][j] = mat_right(i, j);
 }
 
@@ -50,14 +62,14 @@ Matrix::~Matrix()
 
 /// Access
 // Get the number of rows
-uint Matrix::getNumOfRows() const
+unsigned Matrix::getNumOfRows() const
 {
 	return this->rows;
 }
 
 
 // Get the number of columns
-uint Matrix::getNumOfCols() const
+unsigned Matrix::getNumOfCols() const
 {
 	return this->cols;
 }
@@ -66,9 +78,9 @@ uint Matrix::getNumOfCols() const
 // Print the matrix
 void Matrix::printMatrix() const
 {
-	for (uint i = 0; i < rows; i++)
+	for (unsigned i = 0; i < rows; i++)
 	{
-		for (uint j = 0; j < cols; j++)
+		for (unsigned j = 0; j < cols; j++)
 		{
 			std::cout << this->matrix[i][j] << "\t";
 		}
@@ -78,15 +90,8 @@ void Matrix::printMatrix() const
 }
 
 
-// Access an element by its indices 
-float& Matrix::operator()(const uint& row, const uint& col)
-{
-	return this->matrix[row][col];
-}
-
-
 // Access an element by its indices (const)
-const float& Matrix::operator()(const uint& row, const uint& col) const
+const float& Matrix::operator()(const unsigned& row, const unsigned& col) const
 {
 	return this->matrix[row][col];
 }
@@ -104,8 +109,8 @@ Matrix& Matrix::operator=(const Matrix &mat_right)
 	cols = mat_right.getNumOfCols();
 	allocMem();
 	
-	for (uint i = 0; i < rows; i++)
-		for (uint j = 0; j < cols; j++)
+	for (unsigned i = 0; i < rows; i++)
+		for (unsigned j = 0; j < cols; j++)
 			this->matrix[i][j] = mat_right(i, j); 
 
 	return *this;
@@ -122,9 +127,9 @@ Matrix Matrix::operator+(const Matrix &mat_right)
 	}
 	else
 	{
-		Matrix result(rows, cols, 0.0f);
-		for (uint i = 0; i < rows; i++)
-			for (uint j = 0; j < cols; j++)
+		Matrix result(rows, cols);
+		for (unsigned i = 0; i < rows; i++)
+			for (unsigned j = 0; j < cols; j++)
 				result.matrix[i][j] = this->matrix[i][j] + mat_right(i, j);
 		return result;
 	}
@@ -141,8 +146,8 @@ Matrix& Matrix::operator+=(const Matrix &mat_right)
 	}
 	else
 	{
-		for (uint i = 0; i < rows; i++)
-			for (uint j = 0; j < cols; j++)
+		for (unsigned i = 0; i < rows; i++)
+			for (unsigned j = 0; j < cols; j++)
 				this->matrix[i][j] += mat_right(i, j);
 		return *this;
 	}
@@ -159,9 +164,9 @@ Matrix Matrix::operator-(const Matrix &mat_right)
 	}
 	else
 	{
-		Matrix result(rows, cols, 0.0f);
-		for (uint i = 0; i < rows; i++)
-			for (uint j = 0; j < cols; j++)
+		Matrix result(rows, cols);
+		for (unsigned i = 0; i < rows; i++)
+			for (unsigned j = 0; j < cols; j++)
 				result.matrix[i][j] = this->matrix[i][j] - mat_right(i, j);
 		return result;
 	}
@@ -178,8 +183,8 @@ Matrix& Matrix::operator-=(const Matrix &mat_right)
 	}
 	else
 	{
-		for (uint i = 0; i < rows; i++)
-			for (uint j = 0; j < cols; j++)
+		for (unsigned i = 0; i < rows; i++)
+			for (unsigned j = 0; j < cols; j++)
 				this->matrix[i][j] -= mat_right(i, j);
 		return *this;
 	}
@@ -196,12 +201,12 @@ Matrix Matrix::operator*(const Matrix &mat_right)
 	} 
 	else
 	{		
-		uint result_rows = rows;
-		uint result_cols = mat_right.getNumOfCols();
-		Matrix result(rows, cols, 0.0f);
-		for (uint i = 0; i < result_rows; i++)
-			for (uint j = 0; j < result_cols; j++)
-				for (uint k = 0; k < cols; k++)
+		unsigned result_rows = rows;
+		unsigned result_cols = mat_right.getNumOfCols();
+		Matrix result(rows, cols);
+		for (unsigned i = 0; i < result_rows; i++)
+			for (unsigned j = 0; j < result_cols; j++)
+				for (unsigned k = 0; k < cols; k++)
 					result.matrix[i][j] += this->matrix[i][k] * mat_right(k, j);
 		return result;
 	}
@@ -218,18 +223,38 @@ Matrix& Matrix::operator*=(const Matrix &mat_right)
 	}
 	else
 	{
-		Matrix result(rows, cols, 0.0f);
-		for (uint i = 0; i < rows; i++)
-			for (uint j = 0; j < rows; j++)
-				for (uint k = 0; k < cols; k++)
+		Matrix result(rows, cols);
+		for (unsigned i = 0; i < rows; i++)
+			for (unsigned j = 0; j < rows; j++)
+				for (unsigned k = 0; k < cols; k++)
 					result.matrix[i][j] += this->matrix[i][k] * mat_right(k, j);
 		return (*this = result);
 	}
 }
 
 
+// Get a row of number row_get
+Matrix Matrix::getRow(unsigned row_get) const
+{
+	Matrix mat_row(1, cols);
+	for (unsigned j = 0; j < cols; j++)
+		mat_row.matrix[0][j] = this->matrix[row_get][j];
+	return mat_row;
+}
+
+
+// Get a column of number col_get
+Matrix Matrix::getCol(unsigned col_get) const
+{
+	Matrix mat_col(rows, 1);
+	for (unsigned i = 0; i < cols; i++)
+		mat_col.matrix[i][0] = this->matrix[i][col_get];
+	return mat_col;
+}
+
+
 // Delete a row (starting with 0)
-Matrix Matrix::deleteRow(uint row_del) const
+Matrix Matrix::deleteRow(unsigned row_del) const
 {
 	if (row_del >= rows)
 	{
@@ -238,12 +263,12 @@ Matrix Matrix::deleteRow(uint row_del) const
 	}
 	else
 	{
-		Matrix result(rows-1, cols, 0.0f);
-		for (uint i = 0; i < row_del; i++)
-			for (uint j = 0; j < cols; j++)
+		Matrix result(rows-1, cols);
+		for (unsigned i = 0; i < row_del; i++)
+			for (unsigned j = 0; j < cols; j++)
 				result.matrix[i][j] = this->matrix[i][j];
-		for (uint i = row_del; i < rows-1; i++)
-			for (uint j = 0; j < cols; j++)
+		for (unsigned i = row_del; i < rows-1; i++)
+			for (unsigned j = 0; j < cols; j++)
 				result.matrix[i][j] = this->matrix[i+1][j];
 		return result;
 	}
@@ -251,7 +276,7 @@ Matrix Matrix::deleteRow(uint row_del) const
 
 
 // Delete a column (starting with 0)
-Matrix Matrix::deleteCol(uint col_del) const
+Matrix Matrix::deleteCol(unsigned col_del) const
 {
 	if (col_del >= cols)
 	{
@@ -260,12 +285,12 @@ Matrix Matrix::deleteCol(uint col_del) const
 	}
 	else
 	{
-		Matrix result(rows, cols-1, 0.0f);
-		for (uint i = 0; i < rows; i++)
-			for (uint j = 0; j < col_del; j++)
+		Matrix result(rows, cols-1);
+		for (unsigned i = 0; i < rows; i++)
+			for (unsigned j = 0; j < col_del; j++)
 				result.matrix[i][j] = this->matrix[i][j];
-		for (uint i = 0; i < rows; i++)
-			for (uint j = col_del; j < cols-1; j++)
+		for (unsigned i = 0; i < rows; i++)
+			for (unsigned j = col_del; j < cols-1; j++)
 				result.matrix[i][j] = this->matrix[i][j+1];
 		return result;
 	}
@@ -290,7 +315,7 @@ float Matrix::determinant() const
 		}
 		else
 		{
-			for (uint i = 0; i < cols; i++)
+			for (unsigned i = 0; i < cols; i++)
 			{
 				float multiplier = (*this)(0, i);
 				Matrix minor = this->deleteRow(0);
@@ -308,7 +333,7 @@ float Matrix::determinant() const
 void Matrix::allocMem()
 {
 	matrix = new float*[rows];
-	for (uint i = 0; i < rows; i++)
+	for (unsigned i = 0; i < rows; i++)
 		matrix[i] = new float[cols];
 }
 
@@ -316,7 +341,7 @@ void Matrix::allocMem()
 // Deallocate memory
 void Matrix::deallocMem()
 {
-	for (uint i = 0; i < rows; i++)
+	for (unsigned i = 0; i < rows; i++)
 		delete[] matrix[i];
 	delete[] matrix;
 }
