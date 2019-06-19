@@ -423,7 +423,6 @@ Matrix Matrix::makeR() const
 					Matrix newrow = result.getRow(sub_row_count) - result.getRow(row_count) * result.matrix[sub_row_count][pivot_num] *
 							(1 / result.matrix[row_count][pivot_num]);
 					result.setRow(sub_row_count, newrow);	
-					result.printMatrix();
 				}
 				break;
 			}		
