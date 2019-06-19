@@ -21,7 +21,7 @@ public:
 	unsigned getNumOfCols() const;
 	void printMatrix() const;
 
-	//float& operator()(const unsigned&, const unsigned&);
+	//float& operator()(const unsigned, const unsigned);
 	const float& operator()(const unsigned&, const unsigned&) const; 
 
 	Matrix& operator=(const Matrix&);
@@ -31,6 +31,8 @@ public:
 	Matrix& operator-=(const Matrix&);
 	Matrix operator*(const Matrix&);
 	Matrix& operator*=(const Matrix&);
+	Matrix operator*(const float);
+	Matrix& operator*=(const float);
 
 	Matrix transpose();
 
@@ -42,6 +44,13 @@ public:
 	Matrix deleteCol(unsigned) const;
 	void swapRows(unsigned, unsigned);
 	void swapCols(unsigned, unsigned);
+
+	//Matrix invertMatrix();
+	Matrix makeR() const;
+	//Matrix makeL() const;
+	//Matrix makeQ() const;
+	
+	//unsigned rank() const;
 	float determinant() const;
 
 	void allocMem();

@@ -6,7 +6,7 @@
 
 /// Construct and Destruct
 // Constructor
-Matrix::Matrix(unsigned in_rows, unsigned in_cols, float **in_matrix) : 
+Matrix::Matrix(unsigned in_rows, unsigned in_cols, float** in_matrix) : 
 	rows(in_rows), 
 	cols(in_cols)
 {
@@ -49,7 +49,7 @@ Matrix::Matrix(const Matrix& mat_right) :
 	allocMem();
 	for (unsigned i = 0; i < rows; i++)
 		for (unsigned j = 0; j < cols; j++)
-			matrix[i][j] = mat_right(i, j);
+			matrix[i][j] = mat_right.matrix[i][j];
 }
 
 
@@ -97,7 +97,7 @@ const float& Matrix::operator()(const unsigned& row, const unsigned& col) const
 }
 
 
-/// Operations
+/// Arithmetic operations
 // Matrix assignment
 Matrix& Matrix::operator=(const Matrix& mat_right)
 {
@@ -111,7 +111,7 @@ Matrix& Matrix::operator=(const Matrix& mat_right)
 	
 	for (unsigned i = 0; i < rows; i++)
 		for (unsigned j = 0; j < cols; j++)
-			this->matrix[i][j] = mat_right(i, j); 
+			matrix[i][j] = mat_right.matrix[i][j];
 
 	return *this;
 }
@@ -130,7 +130,7 @@ Matrix Matrix::operator+(const Matrix& mat_right)
 		Matrix result(rows, cols);
 		for (unsigned i = 0; i < rows; i++)
 			for (unsigned j = 0; j < cols; j++)
-				result.matrix[i][j] = this->matrix[i][j] + mat_right(i, j);
+				result.matrix[i][j] = matrix[i][j] + mat_right.matrix[i][j];
 		return result;
 	}
 }
@@ -148,7 +148,7 @@ Matrix& Matrix::operator+=(const Matrix& mat_right)
 	{
 		for (unsigned i = 0; i < rows; i++)
 			for (unsigned j = 0; j < cols; j++)
-				this->matrix[i][j] += mat_right(i, j);
+				matrix[i][j] += mat_right.matrix[i][j];
 		return *this;
 	}
 }
@@ -167,7 +167,7 @@ Matrix Matrix::operator-(const Matrix& mat_right)
 		Matrix result(rows, cols);
 		for (unsigned i = 0; i < rows; i++)
 			for (unsigned j = 0; j < cols; j++)
-				result.matrix[i][j] = this->matrix[i][j] - mat_right(i, j);
+				result.matrix[i][j] = matrix[i][j] - mat_right.matrix[i][j];
 		return result;
 	}
 }
@@ -185,7 +185,7 @@ Matrix& Matrix::operator-=(const Matrix& mat_right)
 	{
 		for (unsigned i = 0; i < rows; i++)
 			for (unsigned j = 0; j < cols; j++)
-				this->matrix[i][j] -= mat_right(i, j);
+				matrix[i][j] -= mat_right.matrix[i][j];
 		return *this;
 	}
 }
@@ -207,7 +207,7 @@ Matrix Matrix::operator*(const Matrix& mat_right)
 		for (unsigned i = 0; i < result_rows; i++)
 			for (unsigned j = 0; j < result_cols; j++)
 				for (unsigned k = 0; k < cols; k++)
-					result.matrix[i][j] += this->matrix[i][k] * mat_right(k, j);
+					result.matrix[i][j] += matrix[i][k] * mat_right.matrix[k][j];
 		return result;
 	}
 }
@@ -223,16 +223,34 @@ Matrix& Matrix::operator*=(const Matrix& mat_right)
 	}
 	else
 	{
-		Matrix result(rows, cols);
-		for (unsigned i = 0; i < rows; i++)
-			for (unsigned j = 0; j < rows; j++)
-				for (unsigned k = 0; k < cols; k++)
-					result.matrix[i][j] += this->matrix[i][k] * mat_right(k, j);
-		return (*this = result);
+		*this = (*this) * mat_right;
+		return *this;
 	}
 }
 
 
+// Multiply a matrix by a scalar
+Matrix Matrix::operator*(const float float_right)
+{
+	Matrix result(rows, cols);
+	for (unsigned i = 0; i < rows; i++)
+		for (unsigned j = 0; j < cols; j++)
+			result.matrix[i][j] = matrix[i][j] * float_right;
+	return result;
+}
+
+
+// Multiply self by a scalar
+Matrix& Matrix::operator*=(const float float_right)
+{
+	for (unsigned i = 0; i < rows; i++)
+		for (unsigned j = 0; j < cols; j++)
+			matrix[i][j] *= float_right;
+	return *this;
+}
+
+
+/// Matrix operations
 // Transpose matrix
 Matrix Matrix::transpose()
 {
@@ -309,7 +327,12 @@ void Matrix::setCol(unsigned col_set, const Matrix& in_col)
 // Delete a row (starting with 0)
 Matrix Matrix::deleteRow(unsigned row_del) const
 {
-	if (row_del >= rows)
+	if (rows == 1)
+	{
+		std::cout << "[ERROR]: a single row cannot be deleted" << std::endl;
+		return *this;
+	}
+	else if (row_del >= rows)
 	{
 		std::cout << "[ERROR]: row number is higher than the maximum" << std::endl;
 		return *this;
@@ -331,7 +354,12 @@ Matrix Matrix::deleteRow(unsigned row_del) const
 // Delete a column (starting with 0)
 Matrix Matrix::deleteCol(unsigned col_del) const
 {
-	if (col_del >= cols)
+	if (cols == 0)
+	{
+		std::cout << "[ERROR]: a single column cannot be deleted" << std::endl;
+		return *this;
+	}
+	else if (col_del >= cols)
 	{
 		std::cout << "[ERROR]: column number is higher than the maximum" << std::endl;
 		return *this;
@@ -361,7 +389,7 @@ void Matrix::swapRows(unsigned row_1, unsigned row_2)
 }
 
 
-// Swap two rows
+// Swap two columns
 void Matrix::swapCols(unsigned col_1, unsigned col_2)
 {
 	Matrix temp = this->getCol(col_1);
@@ -369,6 +397,39 @@ void Matrix::swapCols(unsigned col_1, unsigned col_2)
 		matrix[i][col_1] = matrix[i][col_2];
 	for (unsigned i = 0; i < cols; i++)
 		matrix[i][col_2] = temp.matrix[i][0]; 
+}
+
+
+// Make upper triangular
+Matrix Matrix::makeR() const
+{
+	if (rows == 1)
+	{
+		return *this;
+	}
+	Matrix result = *this;
+	for (unsigned pivot_num = 0; pivot_num < cols; pivot_num++)
+	{
+		for (unsigned row_count = pivot_num; row_count < rows; row_count++)
+		{
+			if (matrix[row_count][pivot_num] != 0)
+			{
+				if (row_count != pivot_num)
+				{
+					result.swapRows(pivot_num, row_count);
+				}
+				for (unsigned sub_row_count = row_count+1; sub_row_count < rows; sub_row_count++)
+				{
+					Matrix newrow = result.getRow(sub_row_count) - result.getRow(row_count) * result.matrix[sub_row_count][pivot_num] *
+							(1 / result.matrix[row_count][pivot_num]);
+					result.setRow(sub_row_count, newrow);	
+					result.printMatrix();
+				}
+				break;
+			}		
+		}
+	}
+	return result;
 }
 
 
@@ -385,7 +446,7 @@ float Matrix::determinant() const
 		float det = 0.0f;	
 		if (rows == 2)
 		{
-			det = this->matrix[0][0] * this->matrix[1][1] - this->matrix[0][1] * this->matrix[1][0];
+			det = matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
 			return det; 
 		}
 		else
