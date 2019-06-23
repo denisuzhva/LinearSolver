@@ -60,6 +60,7 @@ Matrix::~Matrix()
 }
 
 
+
 /// Access
 // Get the number of rows
 unsigned Matrix::getNumOfRows() const
@@ -97,12 +98,13 @@ const float& Matrix::operator()(const unsigned& row, const unsigned& col) const
 }
 
 
+
 /// Arithmetic operations
 // Matrix assignment
 Matrix& Matrix::operator=(const Matrix& mat_right)
 {
 	if (&mat_right == this)
-    	return *this;
+	    	return *this;
 
 	deallocMem();
 	rows = mat_right.getNumOfRows();
@@ -230,7 +232,7 @@ Matrix& Matrix::operator*=(const Matrix& mat_right)
 
 
 // Multiply a matrix by a scalar
-Matrix Matrix::operator*(const float float_right)
+Matrix Matrix::operator*(const float& float_right)
 {
 	Matrix result(rows, cols);
 	for (unsigned i = 0; i < rows; i++)
@@ -241,7 +243,7 @@ Matrix Matrix::operator*(const float float_right)
 
 
 // Multiply self by a scalar
-Matrix& Matrix::operator*=(const float float_right)
+Matrix& Matrix::operator*=(const float& float_right)
 {
 	for (unsigned i = 0; i < rows; i++)
 		for (unsigned j = 0; j < cols; j++)
@@ -250,14 +252,36 @@ Matrix& Matrix::operator*=(const float float_right)
 }
 
 
-/// Matrix operations
-// Transpose matrix
-Matrix Matrix::transpose()
+// Divide a matrix by a scalar 
+Matrix Matrix::operator/(const float& float_right)
 {
 	Matrix result(rows, cols);
 	for (unsigned i = 0; i < rows; i++)
 		for (unsigned j = 0; j < cols; j++)
-			result.matrix[i][j] = this->matrix[j][i];
+			result.matrix[i][j] = matrix[i][j] / float_right;
+	return result;
+}
+
+
+// Divide self by a scalar
+Matrix& Matrix::operator/=(const float& float_right)
+{
+	for (unsigned i = 0; i < rows; i++)
+		for (unsigned j = 0; j < cols; j++)
+			matrix[i][j] /= float_right;
+	return *this;
+}
+
+
+
+/// Matrix operations
+// Transpose matrix
+Matrix Matrix::transpose()
+{
+	Matrix result(cols, rows);
+	for (unsigned i = 0; i < rows; i++)
+		for (unsigned j = 0; j < cols; j++)
+			result.matrix[j][i] = matrix[i][j];
 	return result;
 }
 
@@ -310,7 +334,7 @@ void Matrix::setCol(unsigned col_set, const Matrix& in_col)
 	{
 		std::cout << "[ERROR]: not a column" << std::endl;
 	}
-	else if (in_col.cols != cols)
+	else if (in_col.rows != rows)
 	{
 		std::cout << "[ERROR]: the number of rows must match" << std::endl;
 	}
@@ -400,35 +424,75 @@ void Matrix::swapCols(unsigned col_1, unsigned col_2)
 }
 
 
-// Make upper triangular
-Matrix Matrix::makeR() const
+// Make upper triangular using the gaussian elimination
+void Matrix::makeGaussElimR()
 {
-	if (rows == 1)
+	if (rows != 1)
 	{
-		return *this;
-	}
-	Matrix result = *this;
-	for (unsigned pivot_num = 0; pivot_num < cols; pivot_num++)
-	{
-		for (unsigned row_count = pivot_num; row_count < rows; row_count++)
+		unsigned pivot_num = 0;
+		unsigned col_shift = 0;
+		while (pivot_num + col_shift < cols || pivot_num < rows)
 		{
-			if (matrix[row_count][pivot_num] != 0)
+			bool allzeros = true;
+			for (unsigned row_count = pivot_num; row_count < rows; row_count++)
 			{
-				if (row_count != pivot_num)
+				if (matrix[row_count][pivot_num+col_shift] != 0)
 				{
-					result.swapRows(pivot_num, row_count);
+					allzeros = false;
+					if (row_count != pivot_num)
+					{
+						this->swapRows(pivot_num, row_count);
+					}
+					for (unsigned sub_row_count = row_count+1; sub_row_count < rows; sub_row_count++)
+					{
+						Matrix newrow = getRow(sub_row_count) - getRow(row_count) * matrix[sub_row_count][pivot_num+col_shift] *
+								(1 / matrix[row_count][pivot_num+col_shift]);
+						this->setRow(sub_row_count, newrow);	
+					}
+					col_shift = 0;
+					break;
 				}
-				for (unsigned sub_row_count = row_count+1; sub_row_count < rows; sub_row_count++)
-				{
-					Matrix newrow = result.getRow(sub_row_count) - result.getRow(row_count) * result.matrix[sub_row_count][pivot_num] *
-							(1 / result.matrix[row_count][pivot_num]);
-					result.setRow(sub_row_count, newrow);	
-				}
-				break;
-			}		
+			}
+			if (allzeros == true)
+				col_shift++;
+			else
+				pivot_num++;
 		}
 	}
-	return result;
+}
+
+
+// Make orthogonal
+void Matrix::makeGramSchmidtQ()
+{
+	Matrix bckp = *this;
+	bool uu_zero = false;
+	for (unsigned k = 0; k < cols; k++)
+	{
+		Matrix u_k = this->getCol(k);
+		for (unsigned j = 0; j < k; j++)
+		{
+			Matrix u_j = this->getCol(j);
+			Matrix u_j_transp = u_j.transpose();
+			Matrix a_k = this->getCol(k);
+			float ua = (u_j_transp * a_k).matrix[0][0];
+			float uu = (u_j_transp * u_j).matrix[0][0];
+			if (uu == 0.0f)
+			{
+				uu_zero = true;
+				break;
+			}
+			Matrix proj_jk = u_j * (ua / uu);  
+			u_k -= proj_jk;
+		}
+		if (uu_zero == true)
+		{
+			*this = bckp;
+			break;
+		}
+
+		this->setCol(k, u_k);
+	}	
 }
 
 
@@ -455,12 +519,24 @@ float Matrix::determinant() const
 				float multiplier = (*this)(0, i);
 				Matrix minor = this->deleteRow(0);
 				minor = minor.deleteCol(i);
-				det += cuspower(-1.0f, i) * multiplier * minor.determinant();
+				det += cusPower(-1.0f, i) * multiplier * minor.determinant();
 			}
 			return det;
 		}
 	}
 }
+
+
+// Sum of squared elements
+float Matrix::sumOfSquares() const
+{
+	float result = 0;
+	for (unsigned i = 0; i < rows; i++)
+		for (unsigned j = 0; j < cols; j++)
+			result += matrix[i][j]*matrix[i][j];
+	return result;
+}
+
 
 
 /// Misc

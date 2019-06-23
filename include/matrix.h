@@ -17,6 +17,7 @@ public:
 	Matrix(unsigned, unsigned);
 	Matrix(const Matrix&);
 	virtual ~Matrix();
+
 	unsigned getNumOfRows() const;
 	unsigned getNumOfCols() const;
 	void printMatrix() const;
@@ -31,8 +32,10 @@ public:
 	Matrix& operator-=(const Matrix&);
 	Matrix operator*(const Matrix&);
 	Matrix& operator*=(const Matrix&);
-	Matrix operator*(const float);
-	Matrix& operator*=(const float);
+	Matrix operator*(const float&);
+	Matrix& operator*=(const float&);
+	Matrix operator/(const float&);
+	Matrix& operator/=(const float&);
 
 	Matrix transpose();
 
@@ -46,12 +49,13 @@ public:
 	void swapCols(unsigned, unsigned);
 
 	//Matrix invertMatrix();
-	Matrix makeR() const;
+	void makeGaussElimR();
 	//Matrix makeL() const;
-	//Matrix makeQ() const;
+	void makeGramSchmidtQ();
 	
 	//unsigned rank() const;
 	float determinant() const;
+	float sumOfSquares() const; 
 
 	void allocMem();
 	void deallocMem();

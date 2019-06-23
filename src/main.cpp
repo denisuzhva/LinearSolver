@@ -1,6 +1,7 @@
 #include <iostream>
 #include <time.h>
 #include "../include/matrix.h"
+#include "../include/vector.h"
 
 
 
@@ -31,13 +32,16 @@ int main()
 	arr_2d[2][2] = 2.0f;
 	Matrix mat1(rows, cols, arr_2d);
 	mat1.printMatrix();
-	std::cout << "Determinant: " << mat1.determinant() << std::endl;
-	Matrix mat2 = mat1.makeR();
-	mat2.printMatrix();
+	mat1.makeGramSchmidtQ();
+	mat1.printMatrix();
 	
 	for(unsigned i = 0; i < rows; i++)
 		delete[] arr_2d[i];
 	delete[] arr_2d;
+
+	Vector vec1(3);
+	vec1.printVector();
+
 	std::cout << "\nDone! Execution time: " << (float)(clock() - tStart)/CLOCKS_PER_SEC << " sec." <<  std::endl;
 	return 0;
 }
