@@ -1,6 +1,5 @@
 #include <iostream>
 #include "../include/matrix.h"
-#include "../include/cusmath.h"
 
 
 
@@ -18,7 +17,7 @@ Matrix::Matrix(unsigned in_rows, unsigned in_cols, float** in_matrix) :
 
 
 // Copy
-Matrix::Matrix(unsigned in_rows, unsigned in_cols, const float& val) : 
+Matrix::Matrix(unsigned in_rows, unsigned in_cols, float val) : 
 	rows(in_rows), 
 	cols(in_cols)
 {
@@ -63,14 +62,14 @@ Matrix::~Matrix()
 
 /// Access
 // Get the number of rows
-unsigned Matrix::getNumOfRows() const
+const unsigned& Matrix::getNumOfRows() const
 {
 	return rows;
 }
 
 
 // Get the number of columns
-unsigned Matrix::getNumOfCols() const
+const unsigned& Matrix::getNumOfCols() const
 {
 	return cols;
 }
@@ -88,201 +87,6 @@ void Matrix::printMatrix() const
 		std::cout << "\n";
 	}
 	std::cout << std::endl;
-}
-
-
-// Access an element by its indices (const)
-const float& Matrix::operator()(const unsigned& row, const unsigned& col) const
-{
-	return matrix[row][col];
-}
-
-
-
-/// Arithmetic operations
-// Matrix assignment
-Matrix& Matrix::operator=(const Matrix& mat_right)
-{
-	if (&mat_right == this)
-	    	return *this;
-
-	deallocMem();
-	rows = mat_right.getNumOfRows();
-	cols = mat_right.getNumOfCols();
-	allocMem();
-	
-	for (unsigned i = 0; i < rows; i++)
-		for (unsigned j = 0; j < cols; j++)
-			matrix[i][j] = mat_right.matrix[i][j];
-
-	return *this;
-}
-
-
-// Add two matrices
-Matrix Matrix::operator+(const Matrix& mat_right)
-{
-	if (rows != mat_right.getNumOfRows() || cols != mat_right.getNumOfCols())
-	{
-		std::cout << "[ERROR]: the dimensions of A and B must match when C := A + B" << std::endl;
-		return *this;
-	}
-	else
-	{
-		Matrix result(rows, cols);
-		for (unsigned i = 0; i < rows; i++)
-			for (unsigned j = 0; j < cols; j++)
-				result.matrix[i][j] = matrix[i][j] + mat_right.matrix[i][j];
-		return result;
-	}
-}
-
-
-// Add to a matrix
-Matrix& Matrix::operator+=(const Matrix& mat_right)
-{
-	if (rows != mat_right.getNumOfRows() || cols != mat_right.getNumOfCols())
-	{
-		std::cout << "[ERROR]: the dimensions of A and B must match when A := A + B" << std::endl;
-		return *this;
-	}
-	else
-	{
-		for (unsigned i = 0; i < rows; i++)
-			for (unsigned j = 0; j < cols; j++)
-				matrix[i][j] += mat_right.matrix[i][j];
-		return *this;
-	}
-}
-
-
-// Subtract two matrices
-Matrix Matrix::operator-(const Matrix& mat_right)
-{
-	if (rows != mat_right.getNumOfRows() || cols != mat_right.getNumOfCols())
-	{
-		std::cout << "[ERROR]: the dimensions of A and B must match when C := A - B" << std::endl;
-		return *this;
-	}
-	else
-	{
-		Matrix result(rows, cols);
-		for (unsigned i = 0; i < rows; i++)
-			for (unsigned j = 0; j < cols; j++)
-				result.matrix[i][j] = matrix[i][j] - mat_right.matrix[i][j];
-		return result;
-	}
-}
-
-
-// Subtract from a matrix
-Matrix& Matrix::operator-=(const Matrix& mat_right)
-{
-	if (rows != mat_right.getNumOfRows() || cols != mat_right.getNumOfCols())
-	{
-		std::cout << "[ERROR]: the dimensions of A and B must match when A := A - B" << std::endl;
-		return *this;
-	}
-	else
-	{
-		for (unsigned i = 0; i < rows; i++)
-			for (unsigned j = 0; j < cols; j++)
-				matrix[i][j] -= mat_right.matrix[i][j];
-		return *this;
-	}
-}
-
-
-// Multiply two matrices
-Matrix Matrix::operator*(const Matrix& mat_right)
-{
-	if (cols != mat_right.getNumOfRows())
-	{
-		std::cout << "[ERROR]: the number of columns of A must match the number of rows of B when C := A * B" << std::endl;
-		return *this;
-	} 
-	else
-	{		
-		unsigned result_rows = rows;
-		unsigned result_cols = mat_right.getNumOfCols();
-		Matrix result(rows, cols);
-		for (unsigned i = 0; i < result_rows; i++)
-			for (unsigned j = 0; j < result_cols; j++)
-				for (unsigned k = 0; k < cols; k++)
-					result.matrix[i][j] += matrix[i][k] * mat_right.matrix[k][j];
-		return result;
-	}
-}
-
-
-// Multiply self by another matrix
-Matrix& Matrix::operator*=(const Matrix& mat_right)
-{
-	if (rows != mat_right.getNumOfRows() || cols != mat_right.getNumOfCols())
-	{
-		std::cout << "[ERROR]: the dimensions of A and B must match when A := A * B" << std::endl;
-		return *this;
-	}
-	else
-	{
-		*this = (*this) * mat_right;
-		return *this;
-	}
-}
-
-
-// Multiply a matrix by a scalar
-Matrix Matrix::operator*(const float& float_right)
-{
-	Matrix result(rows, cols);
-	for (unsigned i = 0; i < rows; i++)
-		for (unsigned j = 0; j < cols; j++)
-			result.matrix[i][j] = matrix[i][j] * float_right;
-	return result;
-}
-
-
-// Multiply self by a scalar
-Matrix& Matrix::operator*=(const float& float_right)
-{
-	for (unsigned i = 0; i < rows; i++)
-		for (unsigned j = 0; j < cols; j++)
-			matrix[i][j] *= float_right;
-	return *this;
-}
-
-
-// Divide a matrix by a scalar 
-Matrix Matrix::operator/(const float& float_right)
-{
-	Matrix result(rows, cols);
-	for (unsigned i = 0; i < rows; i++)
-		for (unsigned j = 0; j < cols; j++)
-			result.matrix[i][j] = matrix[i][j] / float_right;
-	return result;
-}
-
-
-// Divide self by a scalar
-Matrix& Matrix::operator/=(const float& float_right)
-{
-	for (unsigned i = 0; i < rows; i++)
-		for (unsigned j = 0; j < cols; j++)
-			matrix[i][j] /= float_right;
-	return *this;
-}
-
-
-
-/// Matrix operations
-// Transpose matrix
-Matrix Matrix::transpose()
-{
-	Matrix result(cols, rows);
-	for (unsigned i = 0; i < rows; i++)
-		for (unsigned j = 0; j < cols; j++)
-			result.matrix[j][i] = matrix[i][j];
-	return result;
 }
 
 
@@ -424,6 +228,201 @@ void Matrix::swapCols(unsigned col_1, unsigned col_2)
 }
 
 
+// Access an element by its indices (const)
+const float& Matrix::operator()(unsigned row, unsigned col) const
+{
+	return matrix[row][col];
+}
+
+
+
+/// Arithmetic operations
+// Matrix assignment
+Matrix& Matrix::operator=(const Matrix& mat_right)
+{
+	if (&mat_right == this)
+	    	return *this;
+
+	deallocMem();
+	rows = mat_right.getNumOfRows();
+	cols = mat_right.getNumOfCols();
+	allocMem();
+	
+	for (unsigned i = 0; i < rows; i++)
+		for (unsigned j = 0; j < cols; j++)
+			matrix[i][j] = mat_right.matrix[i][j];
+
+	return *this;
+}
+
+
+// Add two matrices
+Matrix Matrix::operator+(const Matrix& mat_right)
+{
+	if (rows != mat_right.getNumOfRows() || cols != mat_right.getNumOfCols())
+	{
+		std::cout << "[ERROR]: the dimensions of A and B must match when C := A + B" << std::endl;
+		return *this;
+	}
+	else
+	{
+		Matrix result(rows, cols);
+		for (unsigned i = 0; i < rows; i++)
+			for (unsigned j = 0; j < cols; j++)
+				result.matrix[i][j] = matrix[i][j] + mat_right.matrix[i][j];
+		return result;
+	}
+}
+
+
+// Add to a matrix
+Matrix& Matrix::operator+=(const Matrix& mat_right)
+{
+	if (rows != mat_right.getNumOfRows() || cols != mat_right.getNumOfCols())
+	{
+		std::cout << "[ERROR]: the dimensions of A and B must match when A := A + B" << std::endl;
+		return *this;
+	}
+	else
+	{
+		for (unsigned i = 0; i < rows; i++)
+			for (unsigned j = 0; j < cols; j++)
+				matrix[i][j] += mat_right.matrix[i][j];
+		return *this;
+	}
+}
+
+
+// Subtract two matrices
+Matrix Matrix::operator-(const Matrix& mat_right)
+{
+	if (rows != mat_right.getNumOfRows() || cols != mat_right.getNumOfCols())
+	{
+		std::cout << "[ERROR]: the dimensions of A and B must match when C := A - B" << std::endl;
+		return *this;
+	}
+	else
+	{
+		Matrix result(rows, cols);
+		for (unsigned i = 0; i < rows; i++)
+			for (unsigned j = 0; j < cols; j++)
+				result.matrix[i][j] = matrix[i][j] - mat_right.matrix[i][j];
+		return result;
+	}
+}
+
+
+// Subtract from a matrix
+Matrix& Matrix::operator-=(const Matrix& mat_right)
+{
+	if (rows != mat_right.getNumOfRows() || cols != mat_right.getNumOfCols())
+	{
+		std::cout << "[ERROR]: the dimensions of A and B must match when A := A - B" << std::endl;
+		return *this;
+	}
+	else
+	{
+		for (unsigned i = 0; i < rows; i++)
+			for (unsigned j = 0; j < cols; j++)
+				matrix[i][j] -= mat_right.matrix[i][j];
+		return *this;
+	}
+}
+
+
+// Multiply two matrices
+Matrix Matrix::operator*(const Matrix& mat_right)
+{
+	if (cols != mat_right.getNumOfRows())
+	{
+		std::cout << "[ERROR]: the number of columns of A must match the number of rows of B when C := A * B" << std::endl;
+		return *this;
+	} 
+	else
+	{		
+		unsigned result_rows = rows;
+		unsigned result_cols = mat_right.getNumOfCols();
+		Matrix result(rows, cols);
+		for (unsigned i = 0; i < result_rows; i++)
+			for (unsigned j = 0; j < result_cols; j++)
+				for (unsigned k = 0; k < cols; k++)
+					result.matrix[i][j] += matrix[i][k] * mat_right.matrix[k][j];
+		return result;
+	}
+}
+
+
+// Multiply self by another matrix
+Matrix& Matrix::operator*=(const Matrix& mat_right)
+{
+	if (rows != mat_right.getNumOfRows() || cols != mat_right.getNumOfCols())
+	{
+		std::cout << "[ERROR]: the dimensions of A and B must match when A := A * B" << std::endl;
+		return *this;
+	}
+	else
+	{
+		*this = (*this) * mat_right;
+		return *this;
+	}
+}
+
+
+// Multiply a matrix by a scalar
+Matrix Matrix::operator*(float float_right)
+{
+	Matrix result(rows, cols);
+	for (unsigned i = 0; i < rows; i++)
+		for (unsigned j = 0; j < cols; j++)
+			result.matrix[i][j] = matrix[i][j] * float_right;
+	return result;
+}
+
+
+// Multiply self by a scalar
+Matrix& Matrix::operator*=(float float_right)
+{
+	for (unsigned i = 0; i < rows; i++)
+		for (unsigned j = 0; j < cols; j++)
+			matrix[i][j] *= float_right;
+	return *this;
+}
+
+
+// Divide a matrix by a scalar 
+Matrix Matrix::operator/(float float_right)
+{
+	Matrix result(rows, cols);
+	for (unsigned i = 0; i < rows; i++)
+		for (unsigned j = 0; j < cols; j++)
+			result.matrix[i][j] = matrix[i][j] / float_right;
+	return result;
+}
+
+
+// Divide self by a scalar
+Matrix& Matrix::operator/=(float float_right)
+{
+	for (unsigned i = 0; i < rows; i++)
+		for (unsigned j = 0; j < cols; j++)
+			matrix[i][j] /= float_right;
+	return *this;
+}
+
+
+
+/// Matrix operations
+// Transpose matrix
+Matrix Matrix::transpose()
+{
+	Matrix result(cols, rows);
+	for (unsigned i = 0; i < rows; i++)
+		for (unsigned j = 0; j < cols; j++)
+			result.matrix[j][i] = matrix[i][j];
+	return result;
+}
+
+
 // Make upper triangular using the gaussian elimination
 void Matrix::makeGaussElimR()
 {
@@ -441,13 +440,13 @@ void Matrix::makeGaussElimR()
 					allzeros = false;
 					if (row_count != pivot_num)
 					{
-						this->swapRows(pivot_num, row_count);
+						swapRows(pivot_num, row_count);
 					}
 					for (unsigned sub_row_count = row_count+1; sub_row_count < rows; sub_row_count++)
 					{
 						Matrix newrow = getRow(sub_row_count) - getRow(row_count) * matrix[sub_row_count][pivot_num+col_shift] *
 								(1 / matrix[row_count][pivot_num+col_shift]);
-						this->setRow(sub_row_count, newrow);	
+						setRow(sub_row_count, newrow);	
 					}
 					col_shift = 0;
 					break;

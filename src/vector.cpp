@@ -16,7 +16,7 @@ Vector::Vector(unsigned in_len, float* in_vector) :
 
 
 // Copy
-Vector::Vector(unsigned in_len, const float& val) : 
+Vector::Vector(unsigned in_len, float val) : 
 	len(in_len)
 {
 	allocMem();
@@ -75,10 +75,33 @@ void Vector::printVector() const
 }
 
 
-// Access an element by its index (const)
-const float& Vector::operator()(const unsigned& ind) const
+// Get an element by its index
+const float& Vector::getElement(unsigned ind) const 
 {
 	return vector[ind];
+}
+
+
+// Set an element of an index
+void Vector::setElement(unsigned ind, float set_num)
+{
+	vector[ind] = set_num;
+}
+
+
+// Access an element by its index
+const float& Vector::operator()(unsigned ind) const
+{
+	return vector[ind];
+}
+
+
+// Swap two elements 
+void Vector::swapElements(unsigned ind1, unsigned ind2)
+{
+	float temp = vector[ind1];
+	vector[ind1] = vector[ind2];
+	vector[ind2] = temp;
 }
 
 
@@ -182,7 +205,7 @@ float Vector::operator*(const Vector& vector_right)
 	} 
 	else
 	{		
-		float result;
+		float result = 0;
 		for (unsigned i = 0; i < len; i++)
 			result += vector[i] * vector_right.vector[i];
 		return result;
@@ -191,7 +214,7 @@ float Vector::operator*(const Vector& vector_right)
 
 
 // Multiply a vector by a scalar
-Vector Vector::operator*(const float& float_right)
+Vector Vector::operator*(float float_right)
 {
 	Vector result(len);
 	for (unsigned i = 0; i < len; i++)
@@ -201,7 +224,7 @@ Vector Vector::operator*(const float& float_right)
 
 
 // Multiply self by a scalar
-Vector& Vector::operator*=(const float& float_right)
+Vector& Vector::operator*=(float float_right)
 {
 	for (unsigned i = 0; i < len; i++)
 		vector[i] *= float_right;
@@ -210,7 +233,7 @@ Vector& Vector::operator*=(const float& float_right)
 
 
 // Divide a vector by a scalar 
-Vector Vector::operator/(const float& float_right)
+Vector Vector::operator/(float float_right)
 {
 	Vector result(len);
 	for (unsigned i = 0; i < len; i++)
@@ -220,11 +243,22 @@ Vector Vector::operator/(const float& float_right)
 
 
 // Divide self by a scalar
-Vector& Vector::operator/=(const float& float_right)
+Vector& Vector::operator/=(float float_right)
 {
 	for (unsigned i = 0; i < len; i++)
 		vector[i] /= float_right;
 	return *this;
+}
+
+
+
+/// Vector operations
+// Normalize
+void Vector::normalize()
+{
+	float divisor = (*this) * (*this);
+	divisor = cusInvSqrt(divisor);
+	*this *= divisor;
 }
 
 

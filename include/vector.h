@@ -1,5 +1,6 @@
 #ifndef VECTOR_H
 #define VECTOR_H
+#include "../include/cusmath.h"
 
 
 
@@ -12,15 +13,17 @@ private:
 
 public:
 	Vector(unsigned, float*);
-	Vector(unsigned, const float&);
+	Vector(unsigned, float);
 	Vector(unsigned);
 	Vector(const Vector&);
 	virtual ~Vector();
 
 	unsigned getLen() const;
 	void printVector() const;
-	
-	const float& operator()(const unsigned&) const; 
+	const float& getElement(unsigned) const;
+	void setElement(unsigned, float); 
+	const float& operator()(unsigned) const; 
+	void swapElements(unsigned, unsigned);
 
 
 	Vector& operator=(const Vector&);
@@ -29,11 +32,13 @@ public:
 	Vector operator-(const Vector&);
 	Vector& operator-=(const Vector&);
 	float operator*(const Vector&);
-	Vector operator*(const float&);
-	Vector& operator*=(const float&);
-	Vector operator/(const float&);
-	Vector& operator/=(const float&);
+	Vector operator*(float);
+	Vector& operator*=(float);
+	Vector operator/(float);
+	Vector& operator/=(float);
 
+	void normalize();
+	
 	void allocMem();
 	void deallocMem();
 

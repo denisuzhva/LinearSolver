@@ -1,7 +1,6 @@
 #include <iostream>
 #include <time.h>
-#include "../include/matrix.h"
-#include "../include/vector.h"
+#include "../include/linear.h"
 
 
 
@@ -16,7 +15,7 @@ int main()
 	unsigned cols = 3;
 
 	float** arr_2d = new float*[rows];
-	for(unsigned short i = 0; i < rows; i++)
+	for(unsigned i = 0; i < rows; i++)
 	{
 		arr_2d[i] = new float[cols];
 	}
@@ -31,16 +30,20 @@ int main()
 	arr_2d[2][1] = 1.0f;
 	arr_2d[2][2] = 2.0f;
 	Matrix mat1(rows, cols, arr_2d);
-	mat1.printMatrix();
-	mat1.makeGramSchmidtQ();
-	mat1.printMatrix();
 	
 	for(unsigned i = 0; i < rows; i++)
 		delete[] arr_2d[i];
 	delete[] arr_2d;
 
-	Vector vec1(3);
-	vec1.printVector();
+	unsigned len = 3;
+	float* arr_1d = new float[len];
+	arr_1d[0] = 2.0f;
+	arr_1d[1] = 3.0f;
+	arr_1d[2] = 4.0f;
+	Vector vect1(len, arr_1d);
+
+	Vector solution(3);
+	solution = solveLinEq(mat1, vect1);	
 
 	std::cout << "\nDone! Execution time: " << (float)(clock() - tStart)/CLOCKS_PER_SEC << " sec." <<  std::endl;
 	return 0;

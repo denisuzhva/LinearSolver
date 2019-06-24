@@ -27,17 +27,12 @@ float cusPower(const float& base, const int& exp)
 
 
 // Fast inverse square root of a number
-float cusInvSqrt(const float& base) 
+float cusInvSqrt(float x) 
 {
-	long i;
-	float x2, y;
-	const float threehalfs = 1.5f;
-	x2 = base * 0.5f;
-	y  = base;
-	i  = *(long*)&y;
-	i  = 0x5f3759df - (i >> 1);
-	y  = *(float*)&i;
-	y  = y * (threehalfs - (x2 * y * y));
-//	y  = y * (threehalfs - (x2 * y * y));
-	return y;
+	float xhalf = 0.5f * x;
+        int i = *(int*)&x;            // store floating-point bits in integer
+        i = 0x5f3759df - (i >> 1);    // initial guess for Newton's method
+        x = *(float*)&i;              // convert new bits into float
+        x = x*(1.5f - xhalf*x*x);     // One round of Newton's method
+        return x;
 }
