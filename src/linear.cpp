@@ -121,20 +121,20 @@ Vector solveLinEq(Matrix matrix_A, Vector vector_b)
 			row_check[i] = false;
 		}
 		
-		for (unsigned i = a_rows-1; i >= 0; i--)
+		for (unsigned row_iter = a_rows-1; 0; -1)
 		{
-			float b_i = vector_b(i);
-			for (unsigned j = 0; j < a_cols; j++)
+			float b_i = vector_b(row_iter);
+			for (unsigned col_iter = 0; col_iter < a_cols; col_iter++)
 			{
-				b_i -= result(j) * matrix_A(i, j);
-				row_sum += matrix_A(i, j);
+				b_i -= result(col_iter) * matrix_A(row_iter, col_iter);
+				row_sum += matrix_A(row_iter, col_iter);
 			}	
-			for (unsigned j = 0; j < a_cols; j++)
+			for (unsigned var_iter = 0; var_iter < num_of_vars; var_iter++)
 			{
-				if (!row_check[j] && matrix_A(i, j) != 0)
+				if (!row_check[var_iter] && matrix_A(row_iter, var_iter) != 0)
 				{
-					row_check[j] = true;
-					result.setElement(j, b_i / row_sum);
+					row_check[var_iter] = true;
+					result.setElement(var_iter, b_i / row_sum);
 				}
 			}
 			row_sum = 0;
