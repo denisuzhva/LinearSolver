@@ -24,7 +24,7 @@ public:
 	void setElement(unsigned, float); 
 	Vector deleteElement(unsigned) const;
 	void swapElements(unsigned, unsigned);
-	const float& operator()(unsigned) const; 
+	const float& operator[](unsigned) const; 
 
 
 	Vector& operator=(const Vector&);

@@ -1,6 +1,6 @@
 #ifndef MATRIX_H
 #define MATRIX_H
-#include "../include/cusmath.h"
+#include "../cusmath.h"
 
 
 

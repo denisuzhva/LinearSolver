@@ -116,7 +116,7 @@ void Vector::swapElements(unsigned ind1, unsigned ind2)
 
 
 // Access an element by its index
-const float& Vector::operator()(unsigned ind) const
+const float& Vector::operator[](unsigned ind) const
 {
 	return vector[ind];
 }

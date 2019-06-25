@@ -56,6 +56,25 @@ Vector operator*(const Vector& base_vect, const Matrix& mat)
 }
 
 
+// Convert a Matrix' object to a Vector object
+Vector matrixToVector(const Matrix& mat)
+{
+	unsigned mat_rows = mat.getNumOfRows();
+	unsigned mat_cols = mat.getNumOfCols();
+	if ((mat_rows != 1) || (mat_cols != 1))
+	{
+		std::cout << "[ERROR]: only a single row or a column may be converted to a vector" << std::endl;
+		Vector vec_error(1);
+		return vec_error;
+	}
+	if (mat_rows == 1)
+	{
+		Vector result(mat_cols);
+		
+	}
+}
+
+
 // Find x in Ax = b given A and b
 Vector solveLinEq(Matrix matrix_A, Vector vector_b)
 {

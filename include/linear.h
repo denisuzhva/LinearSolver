@@ -8,6 +8,7 @@
 
 Vector operator*(const Matrix&, const Vector&);
 Vector operator*(const Vector&, const Matrix&);
+Vector matrixToVector(const Matrix&);
 
 Vector solveLinEq(Matrix, Vector);
 
