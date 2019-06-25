@@ -5,14 +5,17 @@
 
 /// Construct and Destruct
 // Constructor
-Matrix::Matrix(unsigned in_rows, unsigned in_cols, float** in_matrix) : 
+Matrix::Matrix(unsigned in_rows, unsigned in_cols, float **in_matrix) : 
 	rows(in_rows), 
 	cols(in_cols)
 {
+	/*
 	allocMem();
 	for (unsigned i = 0; i < rows; i++)
 		for (unsigned j = 0; j < cols; j++)
 			matrix[i][j] = in_matrix[i][j];
+	*/
+	matrix = in_matrix;
 }
 
 
@@ -41,7 +44,7 @@ Matrix::Matrix(unsigned in_rows, unsigned in_cols) :
 
 
 // Conversion
-Matrix::Matrix(const Matrix& mat_right) :
+Matrix::Matrix(const Matrix &mat_right) :
 	rows(mat_right.rows),
 	cols(mat_right.cols)
 {
@@ -112,7 +115,7 @@ Matrix Matrix::getCol(unsigned col_get) const
 
 
 // Set a row as the input row
-void Matrix::setRow(unsigned row_set, const Matrix& in_row)
+void Matrix::setRow(unsigned row_set, const Matrix &in_row)
 {
 	if (in_row.rows != 1)
 	{
@@ -133,7 +136,7 @@ void Matrix::setRow(unsigned row_set, const Matrix& in_row)
 
 
 // Set a column as the input column
-void Matrix::setCol(unsigned col_set, const Matrix& in_col)
+void Matrix::setCol(unsigned col_set, const Matrix &in_col)
 {
 	if (in_col.cols != 1)
 	{
@@ -223,23 +226,17 @@ void Matrix::swapCols(unsigned col_1, unsigned col_2)
 }
 
 
-// Access an element by its indices (const)
-const float& Matrix::operator()(unsigned row, unsigned col) const
+// Access a row by the [] operator
+float* Matrix::operator[](unsigned row_num) const
 {
-	return matrix[row][col];
+	return matrix[row_num];
 }
 
-
-// Access an element by its indices (also assign)
-float& Matrix::operator()(unsigned row, unsigned col)
-{
-	return matrix[row][col];
-}
 
 
 /// Arithmetic operations
 // Matrix assignment
-Matrix& Matrix::operator=(const Matrix& mat_right)
+Matrix& Matrix::operator=(const Matrix &mat_right)
 {
 	if (&mat_right == this)
 	    	return *this;
@@ -258,7 +255,7 @@ Matrix& Matrix::operator=(const Matrix& mat_right)
 
 
 // Add two matrices
-Matrix Matrix::operator+(const Matrix& mat_right)
+Matrix Matrix::operator+(const Matrix &mat_right)
 {
 	if (rows != mat_right.getNumOfRows() || cols != mat_right.getNumOfCols())
 	{
@@ -277,7 +274,7 @@ Matrix Matrix::operator+(const Matrix& mat_right)
 
 
 // Add to a matrix
-Matrix& Matrix::operator+=(const Matrix& mat_right)
+Matrix& Matrix::operator+=(const Matrix &mat_right)
 {
 	if (rows != mat_right.getNumOfRows() || cols != mat_right.getNumOfCols())
 	{
@@ -295,7 +292,7 @@ Matrix& Matrix::operator+=(const Matrix& mat_right)
 
 
 // Subtract two matrices
-Matrix Matrix::operator-(const Matrix& mat_right)
+Matrix Matrix::operator-(const Matrix &mat_right)
 {
 	if (rows != mat_right.getNumOfRows() || cols != mat_right.getNumOfCols())
 	{
@@ -314,7 +311,7 @@ Matrix Matrix::operator-(const Matrix& mat_right)
 
 
 // Subtract from a matrix
-Matrix& Matrix::operator-=(const Matrix& mat_right)
+Matrix& Matrix::operator-=(const Matrix &mat_right)
 {
 	if (rows != mat_right.getNumOfRows() || cols != mat_right.getNumOfCols())
 	{
@@ -332,7 +329,7 @@ Matrix& Matrix::operator-=(const Matrix& mat_right)
 
 
 // Multiply two matrices
-Matrix Matrix::operator*(const Matrix& mat_right)
+Matrix Matrix::operator*(const Matrix &mat_right)
 {
 	if (cols != mat_right.getNumOfRows())
 	{
@@ -354,7 +351,7 @@ Matrix Matrix::operator*(const Matrix& mat_right)
 
 
 // Multiply self by another matrix
-Matrix& Matrix::operator*=(const Matrix& mat_right)
+Matrix& Matrix::operator*=(const Matrix &mat_right)
 {
 	if (rows != mat_right.getNumOfRows() || cols != mat_right.getNumOfCols())
 	{
@@ -523,7 +520,7 @@ float Matrix::determinant() const
 		{
 			for (unsigned i = 0; i < cols; i++)
 			{
-				float multiplier = (*this)(0, i);
+				float multiplier = (*this)[0][i];
 				Matrix minor = this->deleteRow(0);
 				minor = minor.deleteCol(i);
 				det += cusPower(-1.0f, i) * multiplier * minor.determinant();
@@ -562,4 +559,59 @@ void Matrix::deallocMem()
 	for (unsigned i = 0; i < rows; i++)
 		delete[] matrix[i];
 	delete[] matrix;
+}
+
+
+
+/// Non-member functions
+// Multiply a matrix by a vector
+Vector operator*(const Matrix &mat, const Vector &base_vect)
+{
+	const unsigned& mat_rows = mat.getNumOfRows();
+	const unsigned& mat_cols = mat.getNumOfCols();
+	const unsigned& base_len = base_vect.getLen();
+	if (mat_cols != base_len)
+	{
+		std::cout << "[ERROR]: the number of matrix' columns must match the length of the vector when V2 := M * V1" << std::endl;
+		return base_vect;
+	}
+	else
+	{
+		Vector result(mat_rows);
+		for (unsigned i = 0; i < mat_rows; i++)
+		{
+			for (unsigned j = 0; j < mat_cols; j++)
+			{
+				result.setElement(i, (result[i] + mat[i][j] * base_vect[j]));
+			}
+		}
+		return result;
+	}
+
+}
+
+
+// Multiply a vector by a matrix
+Vector operator*(const Vector &base_vect, const Matrix &mat)
+{
+	const unsigned& mat_rows = mat.getNumOfRows();
+	const unsigned& mat_cols = mat.getNumOfCols();
+	const unsigned& base_len = base_vect.getLen();
+	if (mat_rows != base_len)
+	{
+		std::cout << "[ERROR]: the number of matrix' rows must match the length of the vector when V2 := V1 * M" << std::endl;
+		return base_vect;
+	}
+	else
+	{
+		Vector result(mat_cols);
+		for (unsigned i = 0; i < mat_cols; i++)
+		{
+			for (unsigned j = 0; j < mat_rows; j++)
+			{
+				result.setElement(i, (result[i] + mat[j][i] * base_vect[j]));
+			}
+		}
+		return result;
+	}
 }

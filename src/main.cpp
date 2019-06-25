@@ -31,10 +31,6 @@ int main()
 	arr_2d[2][2] = 2.0f;
 	Matrix mat_A(rows, cols, arr_2d);
 	
-	for(unsigned i = 0; i < rows; i++)
-		delete[] arr_2d[i];
-	delete[] arr_2d;
-
 	unsigned len = 3;
 	float* arr_1d = new float[len];
 	arr_1d[0] = 2.0f;
@@ -50,7 +46,6 @@ int main()
 	solution = solveLinEq(mat_A, vect_b);
 	std::cout << "x:" << std::endl;	
 	solution.printVector();
-
 
 	std::cout << "\nDone! Execution time: " << (float)(clock() - tStart)/CLOCKS_PER_SEC << " sec." <<  std::endl;
 	return 0;

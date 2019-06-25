@@ -42,7 +42,6 @@ public:
 	
 	void allocMem();
 	void deallocMem();
-
 };
 
 

@@ -9,9 +9,12 @@
 Vector::Vector(unsigned in_len, float* in_vector) : 
 	len(in_len)
 {
+	/*
 	allocMem();
 	for (unsigned i = 0; i < len; i++)
 		vector[i] = in_vector[i];
+	*/
+	vector = in_vector;
 }
 
 

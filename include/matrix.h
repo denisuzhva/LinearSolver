@@ -1,6 +1,7 @@
 #ifndef MATRIX_H
 #define MATRIX_H
-#include "../cusmath.h"
+#include "../include/cusmath.h"
+#include "../include/vector.h"
 
 
 
@@ -30,8 +31,7 @@ public:
 	Matrix deleteCol(unsigned) const;
 	void swapRows(unsigned, unsigned);
 	void swapCols(unsigned, unsigned);
-	const float& operator()(unsigned, unsigned) const; 
-	float& operator()(unsigned, unsigned); 
+	float* operator[](unsigned) const;
 
 	Matrix& operator=(const Matrix&);
 	Matrix operator+(const Matrix&);
@@ -47,7 +47,6 @@ public:
 
 	Matrix transpose();
 
-
 	//Matrix invertMatrix();
 	void makeGaussElimR();
 	//Matrix makeL() const;
@@ -60,6 +59,10 @@ public:
 	void allocMem();
 	void deallocMem();
 };
+
+
+Vector operator*(const Matrix&, const Vector&);
+Vector operator*(const Vector&, const Matrix&);
 
 
 

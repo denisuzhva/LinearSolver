@@ -3,78 +3,6 @@
 
 
 
-// Multiply a matrix by a vector
-Vector operator*(const Matrix& mat, const Vector& base_vect)
-{
-	const unsigned& mat_rows = mat.getNumOfRows();
-	const unsigned& mat_cols = mat.getNumOfCols();
-	const unsigned& base_len = base_vect.getLen();
-	if (mat_cols != base_len)
-	{
-		std::cout << "[ERROR]: the number of matrix' columns must match the length of the vector when V2 := M * V1" << std::endl;
-		return base_vect;
-	}
-	else
-	{
-		Vector result(mat_rows);
-		for (unsigned i = 0; i < mat_rows; i++)
-		{
-			for (unsigned j = 0; j < mat_cols; j++)
-			{
-				result.setElement(i, (result(i) + mat(i, j) * base_vect(j)));
-			}
-		}
-		return result;
-	}
-
-}
-
-
-// Multiply a vector by a matrix
-Vector operator*(const Vector& base_vect, const Matrix& mat)
-{
-	const unsigned& mat_rows = mat.getNumOfRows();
-	const unsigned& mat_cols = mat.getNumOfCols();
-	const unsigned& base_len = base_vect.getLen();
-	if (mat_rows != base_len)
-	{
-		std::cout << "[ERROR]: the number of matrix' rows must match the length of the vector when V2 := V1 * M" << std::endl;
-		return base_vect;
-	}
-	else
-	{
-		Vector result(mat_cols);
-		for (unsigned i = 0; i < mat_cols; i++)
-		{
-			for (unsigned j = 0; j < mat_rows; j++)
-			{
-				result.setElement(i, (result(i) + mat(j, i) * base_vect(j)));
-			}
-		}
-		return result;
-	}
-}
-
-
-// Convert a Matrix' object to a Vector object
-Vector matrixToVector(const Matrix& mat)
-{
-	unsigned mat_rows = mat.getNumOfRows();
-	unsigned mat_cols = mat.getNumOfCols();
-	if ((mat_rows != 1) || (mat_cols != 1))
-	{
-		std::cout << "[ERROR]: only a single row or a column may be converted to a vector" << std::endl;
-		Vector vec_error(1);
-		return vec_error;
-	}
-	if (mat_rows == 1)
-	{
-		Vector result(mat_cols);
-		
-	}
-}
-
-
 // Find x in Ax = b given A and b
 Vector solveLinEq(Matrix matrix_A, Vector vector_b)
 {
@@ -100,7 +28,7 @@ Vector solveLinEq(Matrix matrix_A, Vector vector_b)
 			bool allzeros = true;
 			for (unsigned row_count = pivot_num; row_count < a_rows; row_count++)
 			{
-				if (matrix_A(row_count, pivot_num+col_shift) != 0)
+				if (matrix_A[row_count][pivot_num+col_shift] != 0)
 				{
 					allzeros = false;
 					if (row_count != pivot_num)
@@ -112,12 +40,12 @@ Vector solveLinEq(Matrix matrix_A, Vector vector_b)
 					{
 						Matrix newrow = matrix_A.getRow(sub_row_count) - 
 								matrix_A.getRow(row_count) * 
-								matrix_A(sub_row_count, pivot_num+col_shift) *
-								(1 / matrix_A(row_count, pivot_num+col_shift));
+								matrix_A[sub_row_count][pivot_num+col_shift] *
+								(1 / matrix_A[row_count][pivot_num+col_shift]);
 						float newelement = vector_b.getElement(sub_row_count) - 
 								   vector_b.getElement(row_count) *
-								   matrix_A(sub_row_count, pivot_num+col_shift) *
-								   (1 / matrix_A(row_count, pivot_num+col_shift));
+								   matrix_A[sub_row_count][pivot_num+col_shift] *
+								   (1 / matrix_A[row_count][pivot_num+col_shift]);
 						matrix_A.setRow(sub_row_count, newrow);	
 						vector_b.setElement(sub_row_count, newelement);
 					}
@@ -133,7 +61,7 @@ Vector solveLinEq(Matrix matrix_A, Vector vector_b)
 			}
 			if (allzeros == true)
 			{
-				if (pivot_num == a_cols-1 && vector_b(pivot_num) != 0)
+				if (pivot_num == a_cols-1 && vector_b[pivot_num] != 0)
 				{
 					std::cout << "[ERROR]: the system is unsolvable" << std::endl;
 					return vector_b;
@@ -150,16 +78,16 @@ Vector solveLinEq(Matrix matrix_A, Vector vector_b)
 	for (unsigned row_count = pivot_num; row_count >= 0 && row_count != 4294967295; row_count--)
 	{
 		Matrix current_row = matrix_A.getRow(row_count);
-		float denominator = current_row(0, row_count);
+		float denominator = current_row[0][row_count];
 		current_row /= denominator;
-		vector_b.setElement(row_count, vector_b(row_count) / denominator);
+		vector_b.setElement(row_count, vector_b[row_count] / denominator);
 		matrix_A.setRow(row_count, current_row);
 		for (unsigned sub_row_count = row_count-1; sub_row_count >= 0 && sub_row_count != 4294967295; sub_row_count--)
 		{
 			Matrix current_sub_row = matrix_A.getRow(sub_row_count);
-			float multiplier = current_sub_row(0, row_count);
+			float multiplier = current_sub_row[0][row_count];
 			current_sub_row -= current_row * multiplier;
-			vector_b.setElement(sub_row_count, vector_b(sub_row_count) - vector_b(row_count) * multiplier);
+			vector_b.setElement(sub_row_count, vector_b[sub_row_count] - vector_b[row_count] * multiplier);
 			matrix_A.setRow(sub_row_count, current_sub_row);
 		}		
 	}
@@ -167,7 +95,7 @@ Vector solveLinEq(Matrix matrix_A, Vector vector_b)
 	Vector result(num_of_vars);
 	for (unsigned i = 0; i < b_len; i++)
 	{
-		result.setElement(column_permute[i], vector_b(i));
+		result.setElement(column_permute[i], vector_b[i]);
 	}
 	return result;
 }
