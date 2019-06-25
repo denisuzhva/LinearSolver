@@ -84,7 +84,8 @@ void Matrix::printMatrix() const
 		{
 			std::cout << matrix[i][j] << "\t";
 		}
-		std::cout << "\n";
+		if (i != rows-1)
+			std::cout << "\n";
 	}
 	std::cout << std::endl;
 }
@@ -165,17 +166,14 @@ Matrix Matrix::deleteRow(unsigned row_del) const
 		std::cout << "[ERROR]: row number is higher than the maximum" << std::endl;
 		return *this;
 	}
-	else
-	{
-		Matrix result(rows-1, cols);
-		for (unsigned i = 0; i < row_del; i++)
-			for (unsigned j = 0; j < cols; j++)
-				result.matrix[i][j] = this->matrix[i][j];
-		for (unsigned i = row_del; i < rows-1; i++)
-			for (unsigned j = 0; j < cols; j++)
-				result.matrix[i][j] = this->matrix[i+1][j];
-		return result;
-	}
+	Matrix result(rows-1, cols);
+	for (unsigned i = 0; i < row_del; i++)
+		for (unsigned j = 0; j < cols; j++)
+			result.matrix[i][j] = matrix[i][j];
+	for (unsigned i = row_del; i < rows-1; i++)
+		for (unsigned j = 0; j < cols; j++)
+			result.matrix[i][j] = matrix[i+1][j];
+	return result;
 }
 
 
@@ -192,17 +190,14 @@ Matrix Matrix::deleteCol(unsigned col_del) const
 		std::cout << "[ERROR]: column number is higher than the maximum" << std::endl;
 		return *this;
 	}
-	else
-	{
-		Matrix result(rows, cols-1);
-		for (unsigned i = 0; i < rows; i++)
-			for (unsigned j = 0; j < col_del; j++)
-				result.matrix[i][j] = this->matrix[i][j];
-		for (unsigned i = 0; i < rows; i++)
-			for (unsigned j = col_del; j < cols-1; j++)
-				result.matrix[i][j] = this->matrix[i][j+1];
-		return result;
-	}
+	Matrix result(rows, cols-1);
+	for (unsigned i = 0; i < rows; i++)
+		for (unsigned j = 0; j < col_del; j++)
+			result.matrix[i][j] = matrix[i][j];
+	for (unsigned i = 0; i < rows; i++)
+		for (unsigned j = col_del; j < cols-1; j++)
+			result.matrix[i][j] = matrix[i][j+1];
+	return result;
 }
 
 
@@ -234,6 +229,12 @@ const float& Matrix::operator()(unsigned row, unsigned col) const
 	return matrix[row][col];
 }
 
+
+// Access an element by its indices (also assign)
+float& Matrix::operator()(unsigned row, unsigned col)
+{
+	return matrix[row][col];
+}
 
 
 /// Arithmetic operations
@@ -430,12 +431,13 @@ void Matrix::makeGaussElimR()
 	{
 		unsigned pivot_num = 0;
 		unsigned col_shift = 0;
-		while (pivot_num + col_shift < cols || pivot_num < rows)
+		unsigned col_check = 0;
+		while (col_check + col_shift < cols || pivot_num < rows)
 		{
 			bool allzeros = true;
 			for (unsigned row_count = pivot_num; row_count < rows; row_count++)
 			{
-				if (matrix[row_count][pivot_num+col_shift] != 0)
+				if (matrix[row_count][col_check+col_shift] != 0)
 				{
 					allzeros = false;
 					if (row_count != pivot_num)
@@ -444,18 +446,24 @@ void Matrix::makeGaussElimR()
 					}
 					for (unsigned sub_row_count = row_count+1; sub_row_count < rows; sub_row_count++)
 					{
-						Matrix newrow = getRow(sub_row_count) - getRow(row_count) * matrix[sub_row_count][pivot_num+col_shift] *
-								(1 / matrix[row_count][pivot_num+col_shift]);
+						Matrix newrow = getRow(sub_row_count) - getRow(row_count) * 
+								matrix[sub_row_count][col_check+col_shift] *
+								(1 / matrix[row_count][col_check+col_shift]);
 						setRow(sub_row_count, newrow);	
 					}
+					col_check += col_shift + 1;
 					col_shift = 0;
 					break;
 				}
 			}
 			if (allzeros == true)
+			{
 				col_shift++;
+			}
 			else
+			{
 				pivot_num++;
+			}
 		}
 	}
 }

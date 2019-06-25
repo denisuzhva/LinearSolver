@@ -62,83 +62,93 @@ Vector solveLinEq(Matrix matrix_A, Vector vector_b)
 	const unsigned a_rows = matrix_A.getNumOfRows();
 	const unsigned a_cols = matrix_A.getNumOfCols();
 	const unsigned b_len = vector_b.getLen();
+	unsigned column_permute[a_cols];
+	for (unsigned i = 0; i < a_cols; i++)
+	{
+		column_permute[i] = i;
+	}
 	if (a_rows != b_len)
 	{
 		std::cout << "[ERROR]: the number of rows in A must match the length of b in Ax = b" << std::endl;
 		return vector_b;	
 	}
-	else
+	unsigned pivot_num = 0;
+	if (a_rows != 1)
 	{
-		if (a_rows != 1)
+		unsigned col_shift = 0;
+		while ((pivot_num + col_shift < a_cols) && (pivot_num < a_rows))
 		{
-			unsigned pivot_num = 0;
-			unsigned col_shift = 0;
-			while (pivot_num + col_shift < a_cols || pivot_num < a_rows)
+			bool allzeros = true;
+			for (unsigned row_count = pivot_num; row_count < a_rows; row_count++)
 			{
-				bool allzeros = true;
-				for (unsigned row_count = pivot_num; row_count < a_rows; row_count++)
+				if (matrix_A(row_count, pivot_num+col_shift) != 0)
 				{
-					if (matrix_A(row_count, pivot_num+col_shift) != 0)
+					allzeros = false;
+					if (row_count != pivot_num)
 					{
-						allzeros = false;
-						if (row_count != pivot_num)
-						{
-							matrix_A.swapRows(pivot_num, row_count);
-							vector_b.swapElements(pivot_num, row_count);
-						}
-						for (unsigned sub_row_count = row_count+1; sub_row_count < a_rows; sub_row_count++)
-						{
-							Matrix newrow = matrix_A.getRow(sub_row_count) - 
-									matrix_A.getRow(row_count) * 
-									matrix_A(sub_row_count, pivot_num+col_shift) *
-									(1 / matrix_A(row_count, pivot_num+col_shift));
-							float newelement = vector_b.getElement(sub_row_count) - 
-									   vector_b.getElement(row_count) *
-									   matrix_A(sub_row_count, pivot_num+col_shift) *
-									   (1 / matrix_A(row_count, pivot_num+col_shift));
-							matrix_A.setRow(sub_row_count, newrow);	
-							vector_b.setElement(sub_row_count, newelement);
-						}
-						col_shift = 0;
-						break;
+						matrix_A.swapRows(pivot_num, row_count);
+						vector_b.swapElements(pivot_num, row_count);
 					}
+					for (unsigned sub_row_count = row_count+1; sub_row_count < a_rows; sub_row_count++)
+					{
+						Matrix newrow = matrix_A.getRow(sub_row_count) - 
+								matrix_A.getRow(row_count) * 
+								matrix_A(sub_row_count, pivot_num+col_shift) *
+								(1 / matrix_A(row_count, pivot_num+col_shift));
+						float newelement = vector_b.getElement(sub_row_count) - 
+								   vector_b.getElement(row_count) *
+								   matrix_A(sub_row_count, pivot_num+col_shift) *
+								   (1 / matrix_A(row_count, pivot_num+col_shift));
+						matrix_A.setRow(sub_row_count, newrow);	
+						vector_b.setElement(sub_row_count, newelement);
+					}
+					if (col_shift != 0)
+					{
+						matrix_A.swapCols(pivot_num, pivot_num+col_shift);
+						column_permute[pivot_num] = pivot_num+col_shift;
+						column_permute[pivot_num+col_shift] = pivot_num;
+					}
+					col_shift = 0;
+					break;
 				}
-				if (allzeros == true)
-					col_shift++;
-				else
-					pivot_num++;
 			}
-		}
-		matrix_A.printMatrix();
-		vector_b.printVector();
-		const unsigned num_of_vars = a_cols;
-		float row_sum = 0;
-		Vector result(num_of_vars);
-		bool row_check[num_of_vars];
-		
-		for (unsigned i = 0; i < num_of_vars; i++)
-		{
-			row_check[i] = false;
-		}
-		
-		for (unsigned row_iter = a_rows-1; 0; -1)
-		{
-			float b_i = vector_b(row_iter);
-			for (unsigned col_iter = 0; col_iter < a_cols; col_iter++)
+			if (allzeros == true)
 			{
-				b_i -= result(col_iter) * matrix_A(row_iter, col_iter);
-				row_sum += matrix_A(row_iter, col_iter);
-			}	
-			for (unsigned var_iter = 0; var_iter < num_of_vars; var_iter++)
-			{
-				if (!row_check[var_iter] && matrix_A(row_iter, var_iter) != 0)
+				if (pivot_num == a_cols-1 && vector_b(pivot_num) != 0)
 				{
-					row_check[var_iter] = true;
-					result.setElement(var_iter, b_i / row_sum);
+					std::cout << "[ERROR]: the system is unsolvable" << std::endl;
+					return vector_b;
 				}
+				col_shift++;
+			}	
+			else
+			{
+				pivot_num++;
 			}
-			row_sum = 0;
 		}
-		return result;
 	}
+	pivot_num--;
+	for (unsigned row_count = pivot_num; row_count >= 0 && row_count != 4294967295; row_count--)
+	{
+		Matrix current_row = matrix_A.getRow(row_count);
+		float denominator = current_row(0, row_count);
+		current_row /= denominator;
+		vector_b.setElement(row_count, vector_b(row_count) / denominator);
+		matrix_A.setRow(row_count, current_row);
+		for (unsigned sub_row_count = row_count-1; sub_row_count >= 0 && sub_row_count != 4294967295; sub_row_count--)
+		{
+			Matrix current_sub_row = matrix_A.getRow(sub_row_count);
+			float multiplier = current_sub_row(0, row_count);
+			current_sub_row -= current_row * multiplier;
+			vector_b.setElement(sub_row_count, vector_b(sub_row_count) - vector_b(row_count) * multiplier);
+			matrix_A.setRow(sub_row_count, current_sub_row);
+		}		
+	}
+	const unsigned& num_of_vars = a_cols;
+	Vector result(num_of_vars);
+	for (unsigned i = 0; i < b_len; i++)
+	{
+		result.setElement(column_permute[i], vector_b(i));
+	}
+	return result;
 }

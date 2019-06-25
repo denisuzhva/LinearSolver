@@ -22,8 +22,9 @@ public:
 	void printVector() const;
 	const float& getElement(unsigned) const;
 	void setElement(unsigned, float); 
-	const float& operator()(unsigned) const; 
+	Vector deleteElement(unsigned) const;
 	void swapElements(unsigned, unsigned);
+	const float& operator()(unsigned) const; 
 
 
 	Vector& operator=(const Vector&);

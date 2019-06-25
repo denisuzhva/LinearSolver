@@ -30,9 +30,8 @@ public:
 	Matrix deleteCol(unsigned) const;
 	void swapRows(unsigned, unsigned);
 	void swapCols(unsigned, unsigned);
-
-	//float& operator()(const unsigned, const unsigned);
 	const float& operator()(unsigned, unsigned) const; 
+	float& operator()(unsigned, unsigned); 
 
 	Matrix& operator=(const Matrix&);
 	Matrix operator+(const Matrix&);

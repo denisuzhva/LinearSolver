@@ -89,10 +89,20 @@ void Vector::setElement(unsigned ind, float set_num)
 }
 
 
-// Access an element by its index
-const float& Vector::operator()(unsigned ind) const
+// Delete an element
+Vector Vector::deleteElement(unsigned ind) const 
 {
-	return vector[ind];
+	if (len == 0)
+	{
+		std::cout << "[ERROR]: a single element cannot be deleted" << std::endl;
+		return *this;
+	}
+	Vector result(len-1);
+	for (unsigned i = 0; i < ind; i++)
+		result.setElement(i, vector[i]);
+	for (unsigned i = ind; i < len-1; i++)
+		result.setElement(i, vector[i+1]);
+	return result;
 }
 
 
@@ -102,6 +112,13 @@ void Vector::swapElements(unsigned ind1, unsigned ind2)
 	float temp = vector[ind1];
 	vector[ind1] = vector[ind2];
 	vector[ind2] = temp;
+}
+
+
+// Access an element by its index
+const float& Vector::operator()(unsigned ind) const
+{
+	return vector[ind];
 }
 
 

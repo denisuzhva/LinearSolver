@@ -29,7 +29,7 @@ int main()
 	arr_2d[2][0] = 3.0f;
 	arr_2d[2][1] = 1.0f;
 	arr_2d[2][2] = 2.0f;
-	Matrix mat1(rows, cols, arr_2d);
+	Matrix mat_A(rows, cols, arr_2d);
 	
 	for(unsigned i = 0; i < rows; i++)
 		delete[] arr_2d[i];
@@ -40,10 +40,17 @@ int main()
 	arr_1d[0] = 2.0f;
 	arr_1d[1] = 3.0f;
 	arr_1d[2] = 4.0f;
-	Vector vect1(len, arr_1d);
+	Vector vect_b(len, arr_1d);
+	std::cout << "A:" << std::endl;
+	mat_A.printMatrix();
+	std::cout << "b:" << std::endl;
+	vect_b.printVector();
 
 	Vector solution(3);
-	solution = solveLinEq(mat1, vect1);	
+	solution = solveLinEq(mat_A, vect_b);
+	std::cout << "x:" << std::endl;	
+	solution.printVector();
+
 
 	std::cout << "\nDone! Execution time: " << (float)(clock() - tStart)/CLOCKS_PER_SEC << " sec." <<  std::endl;
 	return 0;
